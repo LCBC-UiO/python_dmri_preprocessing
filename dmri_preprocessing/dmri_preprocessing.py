@@ -12,8 +12,6 @@ import workflows
 import outputs
 import report.reports
 
-from _version import get_versions
-
 application_name = "dmri_preprocessing"
 version = "0.0.3"
 
