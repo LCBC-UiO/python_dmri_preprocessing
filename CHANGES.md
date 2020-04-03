@@ -1,3 +1,9 @@
+0.0.3 (April 03, 2020)
+======================
+
+  * [MAINT] Use static versioning instead of versioneer. (#8)
+
+
 0.0.2 (April 03, 2020)
 ======================
 

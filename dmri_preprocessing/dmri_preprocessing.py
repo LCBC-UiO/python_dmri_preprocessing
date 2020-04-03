@@ -15,7 +15,7 @@ import report.reports
 from _version import get_versions
 
 application_name = "dmri_preprocessing"
-version = "0.0.2-1"
+version = "0.0.3"
 
 # Modified from qsiprep
 def get_parser():
