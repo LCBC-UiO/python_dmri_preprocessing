@@ -91,7 +91,7 @@ def gather_inputs(data, subject,session,output_dir):
             name='merge'
         )
         merge.base_dir = output_dir
-        #merge.run()
+        merge.run()
         utils.merge_bval_bvecs(in_files_dwi,output_file.replace('.nii.gz',''))
         data['dwi'][0]['filename'] = os.path.join(output_dir,output_file)
     else:
@@ -136,7 +136,7 @@ def run_dwidenoise(data, denoise_filter_length, n_cpus, output_dir):
         name='dwidenoise'
     )
     dwidenoise.base_dir = output_dir
-    #dwidenoise.run()
+    dwidenoise.run()
     data['dwi'][0]['filename'] = out_dwidenoise
 
     # Produce qc figure
@@ -177,7 +177,7 @@ def run_mrdegibbs(data, n_cpus, output_dir):
         name='mrdegibbs'
     )
     mrdegibbs.base_dir = output_dir
-    #mrdegibbs.run()
+    mrdegibbs.run()
 
     data['dwi'][0]['filename'] = out_mrdegibbs
 
@@ -254,7 +254,7 @@ def run_topup(data, topup_options, output_dir):
         name='merge'
     )
     merge.base_dir = output_dir
-    #merge.run()
+    merge.run()
 
     topup_nipype_name = 'topup'
     topup = pe.Node(
@@ -267,7 +267,7 @@ def run_topup(data, topup_options, output_dir):
         name=topup_nipype_name
     )
     topup.base_dir = output_dir
-    #topup.run()
+    topup.run()
 
     # Produce qc figure
     before_nii = extract_frame_dwi(multiple_encoding_directions_file,0)
@@ -305,7 +305,7 @@ def extract_frame_dwi(fname,frame_nr):
             name='extract_%02i' % frame_nr
         )
         extract.base_dir = os.path.dirname(fname)
-        #extract.run()
+        extract.run()
 
     return output
 
@@ -341,7 +341,7 @@ def extract_mask_from_dwi(data,dwi_file):
         name='bet'
     )
     bet.base_dir = os.path.dirname(dwi_file)
-    #bet.run()
+    bet.run()
 
     return in_mask
 
@@ -397,7 +397,7 @@ def prepare_eddy(data,topup_options,phase_encoding_directions,output_dir):
             name='mean'
         )
         mean.base_dir = output_dir
-        #mean.run()
+        mean.run()
 
         out_brain = in_mean_topup_corrected.replace("_mean.nii.gz","_mean_brain.nii.gz")
         eddy_inputs['in_mask'] = out_brain.replace('_brain.nii.gz','_brain_mask.nii.gz')
@@ -412,7 +412,7 @@ def prepare_eddy(data,topup_options,phase_encoding_directions,output_dir):
             name='bet'
         )
         bet.base_dir = output_dir
-        #bet.run()
+        bet.run()
 
         # Check if first file in acq_p file is corresponding to the same phase encoding directions as the dwi file
         if topup_options['only_fmap']:
@@ -501,7 +501,7 @@ def run_eddy(eddy_inputs,topup_options,output_dir,n_cpus):
             name=name
         )
         eddy.base_dir = output_dir
-        #eddy.run()
+        eddy.run()
     else:
         eddy = pe.Node(
             fsl.Eddy(
@@ -519,7 +519,7 @@ def run_eddy(eddy_inputs,topup_options,output_dir,n_cpus):
             name=name
         )
         eddy.base_dir = output_dir
-        #eddy.run()
+        eddy.run()
     return os.path.join(output_dir,name)
 
 def run_n4biasfieldcorrection(data,output_dir):
@@ -555,7 +555,7 @@ def run_n4biasfieldcorrection(data,output_dir):
         name=name_n4bias
     )
     n4bias.base_dir = output_dir
-    #n4bias.run()
+    n4bias.run()
 
     # Apply bias field on dwi sequence by division using fslmaths
     name_apply_field = 'apply_bias_field'
@@ -573,7 +573,7 @@ def run_n4biasfieldcorrection(data,output_dir):
         name=name_apply_field
     )
     apply_field.base_dir = base_dir
-    #apply_field.run()
+    apply_field.run()
 
     # Produce qc figures
     output_svg_basename = out_bias.replace('.nii.gz','')
@@ -620,6 +620,6 @@ def run_dtifit(in_file,in_bval,in_bvec,in_mask,output_dir):
         name=name
     )
     dtifit.base_dir = output_dir
-    #dtifit.run()
+    dtifit.run()
 
     return os.path.join(output_dir,name)
