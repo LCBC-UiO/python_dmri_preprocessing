@@ -12,8 +12,10 @@ import workflows
 import outputs
 import report.reports
 
+from _version import get_versions
+
 application_name = "dmri_preprocessing"
-version = "0.0.1" # TODO: Automatically get version!
+version = get_versions()['version']
 
 # Modified from qsiprep
 def get_parser():
