@@ -1,3 +1,9 @@
+0.0.4 (April 03, 2020)
+======================
+
+  * [FIX] Fix bug related to versioneer (leftover code) and matplotlib (#9)
+
+
 0.0.3 (April 03, 2020)
 ======================
 
