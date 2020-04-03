@@ -373,25 +373,4 @@ def plot_gradients(bvals, orig_bvecs, source_filenums, output_fname, final_bvecs
     fig = None
 
 if __name__ == "__main__":
-    data_dir = "/cluster/projects/p23/users/p23-fredrmag/Cross-project/dti_test/scratch/dmri_preprocessing_wf/sub-1100201_ses-01ousSkyra_wf"
-
-    b0_nii_path = data_dir + "/AP.nii.gz"
-    b0_corrected_nii_path = data_dir + "/00_pre_hmc/AP_corrected.nii.gz"
-    mask_nii_path = data_dir + "/00_pre_hmc/topup/AP_PA_corrected_mean_brain_mask.nii.gz"
-
-    #plot_before_after_svg(b0_nii_path,b0_corrected_nii_path,mask_nii_path,'report.svg')
-    confounds_file = "/cluster/projects/p23/users/p23-fredrmag/Cross-project/dti_test/bids/derivatives/dmri_preprocessing/sub-1100201/ses-01ousSkyra/dwi/sub-1100201_ses-01ousSkyra_space-orig_desc-confounds.tsv"
-    sliceqc_file = data_dir + "/01_hmc/eddy_corrected.eddy_outlier_n_sqr_stdev_map"
-    #plot_dMRI_confounds_carpet(confounds_file,sliceqc_file,"output_image.svg")
-    bval_file = data_dir + "/00_pre_hmc/sub-1100201_ses-01ousSkyra_dwi.bval"
-    bvec_file = data_dir + "/00_pre_hmc/sub-1100201_ses-01ousSkyra_dwi.bvec"
-    final_bvec_file = data_dir + "/01_hmc/eddy_corrected.eddy_rotated_bvecs" 
-    bvals = np.loadtxt(fname=bval_file).T
-    orig_bvecs = np.loadtxt(fname=bvec_file).T
-    source_filenums = np.ones_like(bvals)
-    source_filenums[0:12] = 2
-    source_filenums[12:30] = 3
-
-    final_bvecs = np.loadtxt(fname=final_bvec_file).T
-    output_fname = "plot_bvecs.gif"
-    plot_gradients(bvals, orig_bvecs, source_filenums, output_fname, final_bvecs=final_bvecs,frames=80)
+    print("File should not be ran as a stand alone.")
