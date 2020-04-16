@@ -127,15 +127,15 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     sub = "sub-" + str(data_raw['subject'])
     ses = "ses-" + str(data_raw['session'])
 
-    # Create dataset_description.json
-    create_dataset_description(data_raw,output_dir_base,application_name)
-
     output_dir_session = os.path.join(output_dir_base,sub,ses)
     output_dir_dwi = os.path.join(output_dir_session,"dwi")
     output_dir_figures = os.path.join(output_dir_session,"figures")
 
     os.makedirs(output_dir_dwi,exist_ok=True)
     os.makedirs(output_dir_figures,exist_ok=True)
+    
+    # Create dataset_description.json
+    create_dataset_description(data_raw,output_dir_base,application_name)
 
     sub_ses_basename = sub + "_" + ses + "_space-orig_desc-"
 
