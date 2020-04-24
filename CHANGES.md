@@ -1,3 +1,10 @@
+0.0.5 (April 24, 2020)
+======================
+
+  * [FIX] Add as many entries to the enc_file.txt as it is frames in the fieldmaps. (#13)
+  * [FIX] Error when creating dataset_description.json (#11)
+
+
 0.0.4 (April 03, 2020)
 ======================
 
