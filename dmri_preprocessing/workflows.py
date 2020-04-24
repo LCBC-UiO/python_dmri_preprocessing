@@ -11,6 +11,7 @@ from nipype.interfaces import mrtrix3
 from nipype.interfaces import ants
 from report.plots import plot_before_after_svg
 import subprocess
+import nibabel as nib
 
 import utils
 
@@ -227,8 +228,13 @@ def run_topup(data, topup_options, output_dir):
         # merge fmaps:
         for fmap in data['fmap']:
             in_files_fmap.append(fmap['filename'])
-            encoding_directions.append(fmap['metadata']['PhaseEncodingDirection'])
-            readout_times.append(fmap['metadata']['TotalReadoutTime'])
+            # Add as many entries to the encoding direction file as it is frames
+            # in the nifty files
+            fmap_nii_frames = nib.load(fmap['filename']).shape[3]
+            for i in range(0,fmap_nii_frames):
+                encoding_directions.append(fmap['metadata']['PhaseEncodingDirection'])
+                readout_times.append(fmap['metadata']['TotalReadoutTime'])
+                
     elif topup_options['dwi_fmap_combined']:
         # Extract b0 from dwi
         b0_file = extract_frame_dwi(data['dwi'][0]['filename'],data['dwi'][0]['b0_idx'][0])
