@@ -433,10 +433,14 @@ def prepare_eddy(data,topup_options,phase_encoding_directions,output_dir):
         diff_per = np.abs(np.mean(np.array(fmap_corr_voxels)/np.array(dwi_voxels))-1)
 
         if fmap_corr_voxels != dwi_voxels and diff_per < 1e-04:
+            # Change input mask
+            input_mean_topup_mask = eddy_inputs['in_mask']
+            eddy_inputs['in_mask'] = input_mean_topup_mask.replace("_brain.nii.gz","_brain_copygeom.nii.gz")
             copygeom = pe.Node(
                 fsl.utils.CopyGeom(
                     in_file=data['b0_mask'],
-                    dest_file=eddy_inputs['in_mask'],
+                    dest_file=input_mean_topup_mask,
+                    out_file=eddy_inputs['in_mask'],
                     output_type="NIFTI_GZ"
                 ), 
                 name='copygeom'
