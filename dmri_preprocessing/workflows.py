@@ -629,3 +629,37 @@ def run_dtifit(in_file,in_bval,in_bvec,in_mask,output_dir):
     dtifit.run()
 
     return os.path.join(output_dir,name)
+
+def run_bedpostx(in_file,in_bval,in_bvec,in_mask,n_fibres,output_dir):
+    """
+    Run bedpostx.
+
+    Inputs
+    ======
+    in_file: input file to fit diffusion tensor
+    in_bval: bval file
+    in_bvec: bvec file
+    in_mask: brain mask file
+    output_dir: work directory for nipype
+
+    Outputs
+    =======
+    bedpostx_work_dir: bedpostx work directory
+    """
+    name = '04_bedpostx'
+    # Run bedpostx on output
+    bedpostx = pe.Node(
+        fsl.BEDPOSTX5(
+            dwi = in_file,
+            bvals = in_bval,
+            bvecs = in_bvec,
+            n_fibres = n_fibres,
+            mask = in_mask,
+            output_type = "NIFTI_GZ"
+        ),
+        name=name
+    )
+    bedpostx.base_dir = output_dir
+    bedpostx.run()
+
+    return os.path.join(output_dir,name)
