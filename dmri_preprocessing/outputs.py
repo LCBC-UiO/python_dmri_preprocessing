@@ -97,7 +97,7 @@ def create_dataset_description(data_raw,output_dir,application_name):
         with open(filename,'w') as json_file:
             json_file.write(json.dumps(dataset_description, sort_keys=True, indent=4, separators=(',', ': ')))
 
-def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_output_dir, dtifit_dir, eddy_input, figures):
+def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_output_dir, dtifit_dir, bedpostx_parameters, bedpostx_output_dir,eddy_input, figures):
     """
     Copy all processed data from work directory to derivatives directory.
 
@@ -117,6 +117,10 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
         path to eddys work directory
     dtifit_dir:
         path to dtifits work directory
+    bedpostx_parameters:
+        parameters used in bedpostx
+    bedpostx_output_dir:
+        work directory containing bedpostx output.
     eddy_input:
         dict containing inputs to eddy.
     figures:
@@ -222,7 +226,7 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
         shutil.copy(dtifit_file, dtifit_derivative_p)
 
     # Create json files
-    create_json(data_raw,os.path.join(output_dir_dwi,sub_ses_basename))
+    create_json(data_raw,os.path.join(output_dir_dwi,sub_ses_basename),bedpostx_parameters)
 
 def get_raw_sources(data_raw):
     """
@@ -257,7 +261,7 @@ def get_raw_sources(data_raw):
 
     return raw_sources
 
-def create_json(data_raw, sub_ses_basename_p):
+def create_json(data_raw, sub_ses_basename_p, bedpostx_parameters):
     """
     Create metadata .json files which will accompany the final files
     in the derivatives directory.
@@ -301,13 +305,34 @@ def create_json(data_raw, sub_ses_basename_p):
         'fsl version': data_raw['fsl_version'],
         'mrtrix3 version': data_raw['mrtrix3_version']
     }
-    # _diffmodel.json
+    # DTI_diffmodel.json
     diffmodel_json_filename = sub_ses_basename_p + "preproc_model-DTI_diffmodel.json"
     diffmodel_json = {
         'Parameters':{
             'FitMethod':'OLS'
         },
         'command':'dtifit',
+        'fsl version': data_raw['fsl_version']
+    }
+
+    # bedpostx_diffmodel.json
+    if bedpostx_parameters['model'] == 1:
+        model = 'monoexponential'
+    elif bedpostx_parameters['model'] == 2:
+        model = 'multiexponentialStick',
+    elif bedpostx_parameters['model'] == 3:
+        model = 'multiexponentialZeppelin'
+
+    diffmodel_json_filename = sub_ses_basename_p + "preproc_model-BEDPOSTX_diffmodel.json"
+    diffmodel_json = {
+        'Parameters' : {
+            'NFibers' : bedpostx_parameters['n_fibers'],
+            'Fudge' : bedpostx_parameters['fudge'],
+            'BurnIn' : bedpostx_parameters['burn_in'],
+            'NJumps' : bedpostx_parameters['n_jumps'],
+            'SampleEvery' : bedpostx_parameters['sample_every'],
+            'Model' : model 
+        },
         'fsl version': data_raw['fsl_version']
     }
 

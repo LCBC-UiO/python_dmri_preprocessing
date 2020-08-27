@@ -126,6 +126,16 @@ denoise_filter_length = (
     opts.dwi_denoise_window
 )
 
+# bedpostx settings
+bedpostx_parameters = {
+    "n_fibers" : 3,
+    "burn_in" : 1000,
+    "fudge" : 1,
+    "n_jumps" : 1250,
+    "sample_every" : 25,
+    "model" : 2
+}
+
 bids_input = os.path.join(BIDS_DIR,"sub-"+subject,"ses-"+session)
 assert os.path.exists(bids_input) == True, "Input dir: %s does not exist." % bids_input
 
@@ -195,10 +205,37 @@ output_svg = workflows.run_n4biasfieldcorrection(data,subject_work_dir)
 figures.extend(output_svg)
 
 # dtifit
-dtifit_output_dir = workflows.run_dtifit(data['dwi'][0]['filename'],data['in_bval'],eddy_output['rotated_bvec'], eddy_inputs['in_mask'],subject_work_dir)
+dtifit_output_dir = workflows.run_dtifit(
+    data['dwi'][0]['filename'], # eddy_corrected
+    data['in_bval'],
+    eddy_output['rotated_bvec'], 
+    eddy_inputs['in_mask'],
+    subject_work_dir
+)
+
+# bedpostx
+bedpostx_output_dir = workflows.run_bedpostx(
+    data['dwi'][0]['filename'], # eddy_corrected
+    data['in_bval'],
+    eddy_output['rotated_bvec'], 
+    eddy_inputs['in_mask'],
+    bedpostx_parameters, 
+    subject_work_dir
+)
 
 print("Output results to derivatives directory")
-outputs.to_derivatives(data, data_raw,OUTPUT_DIR,application_name,eddy_output_dir,dtifit_output_dir,eddy_inputs,figures)
+outputs.to_derivatives(
+    data, 
+    data_raw,
+    OUTPUT_DIR,
+    application_name,
+    eddy_output_dir,
+    dtifit_output_dir,
+    bedpostx_parameters,
+    bedpostx_output_dir,
+    eddy_inputs,
+    figures
+)
 
 # Create report
 report.reports.create_report(data, data_raw, OUTPUT_DIR, application_name)

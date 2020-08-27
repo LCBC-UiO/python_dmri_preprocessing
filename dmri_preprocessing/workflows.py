@@ -630,7 +630,7 @@ def run_dtifit(in_file,in_bval,in_bvec,in_mask,output_dir):
 
     return os.path.join(output_dir,name)
 
-def run_bedpostx(in_file,in_bval,in_bvec,in_mask,n_fibres,output_dir):
+def run_bedpostx(in_file,in_bval,in_bvec,in_mask,bedpostx_parameters,output_dir):
     """
     Run bedpostx.
 
@@ -653,9 +653,14 @@ def run_bedpostx(in_file,in_bval,in_bvec,in_mask,n_fibres,output_dir):
             dwi = in_file,
             bvals = in_bval,
             bvecs = in_bvec,
-            n_fibres = n_fibres,
+            n_fibres = bedpostx_parameters['n_fibres'],
             mask = in_mask,
-            output_type = "NIFTI_GZ"
+            output_type = "NIFTI_GZ",
+            burn_in = bedpostx_parameters['burn_in'],
+            fudge = bedpostx_parameters['fudge'],
+            n_jumps = bedpostx_parameters['n_jumps'],
+            sample_every = bedpostx_parameters['sample_every'],
+            model = bedpostx_parameters['model']
         ),
         name=name
     )
