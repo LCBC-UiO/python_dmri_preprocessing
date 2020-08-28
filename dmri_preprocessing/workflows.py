@@ -4,6 +4,7 @@
 import os
 import shutil
 import glob
+import numpy as np
 
 import nipype.pipeline.engine as pe 
 
@@ -420,6 +421,33 @@ def prepare_eddy(data,topup_options,phase_encoding_directions,output_dir):
         )
         bet.base_dir = output_dir
         bet.run()
+
+        # Check if the dwi brain mask and the brain mask extracted
+        # from the topup corrected data have the same geometry.
+        fmap_corr_brain_mask_img = nib.load(eddy_inputs['in_mask'])
+        dwi_brain_mask_img = nib.load(data['b0_mask'])
+
+        # Extracts voxel dimensions
+        fmap_corr_voxels = fmap_corr_brain_mask_img.header.get_zooms()
+        dwi_voxels = dwi_brain_mask_img.header.get_zooms()
+
+        diff_per = np.abs(np.mean(np.array(fmap_corr_voxels)/np.array(dwi_voxels))-1)
+
+        if fmap_corr_voxels != dwi_voxels and diff_per < 1e-04:
+            # Change input mask
+            input_mean_topup_mask = eddy_inputs['in_mask']
+            copygeom = pe.Node(
+                fsl.utils.CopyGeom(
+                    in_file=data['b0_mask'],
+                    dest_file=input_mean_topup_mask,
+                    output_type="NIFTI_GZ"
+                ), 
+                name='copygeom'
+            )
+            copygeom.base_dir = output_dir
+            copygeom.run()
+
+            eddy_inputs['in_mask'] = input_mean_topup_mask.replace("/topup/","/copygeom/")
 
         # Check if first file in acq_p file is corresponding to the same phase encoding directions as the dwi file
         if topup_options['only_fmap']:
