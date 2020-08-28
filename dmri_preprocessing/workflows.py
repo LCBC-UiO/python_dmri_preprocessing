@@ -3,6 +3,8 @@
 
 import os
 import shutil
+import glob
+import numpy as np
 
 import nipype.pipeline.engine as pe 
 
@@ -420,6 +422,33 @@ def prepare_eddy(data,topup_options,phase_encoding_directions,output_dir):
         bet.base_dir = output_dir
         bet.run()
 
+        # Check if the dwi brain mask and the brain mask extracted
+        # from the topup corrected data have the same geometry.
+        fmap_corr_brain_mask_img = nib.load(eddy_inputs['in_mask'])
+        dwi_brain_mask_img = nib.load(data['b0_mask'])
+
+        # Extracts voxel dimensions
+        fmap_corr_voxels = fmap_corr_brain_mask_img.header.get_zooms()
+        dwi_voxels = dwi_brain_mask_img.header.get_zooms()
+
+        diff_per = np.abs(np.mean(np.array(fmap_corr_voxels)/np.array(dwi_voxels))-1)
+
+        if fmap_corr_voxels != dwi_voxels and diff_per < 1e-04:
+            # Change input mask
+            input_mean_topup_mask = eddy_inputs['in_mask']
+            copygeom = pe.Node(
+                fsl.utils.CopyGeom(
+                    in_file=data['b0_mask'],
+                    dest_file=input_mean_topup_mask,
+                    output_type="NIFTI_GZ"
+                ), 
+                name='copygeom'
+            )
+            copygeom.base_dir = output_dir
+            copygeom.run()
+
+            eddy_inputs['in_mask'] = input_mean_topup_mask.replace("/topup/","/copygeom/")
+
         # Check if first file in acq_p file is corresponding to the same phase encoding directions as the dwi file
         if topup_options['only_fmap']:
             for i in range(0,len(phase_encoding_directions['fmap'])):
@@ -599,7 +628,7 @@ def run_n4biasfieldcorrection(data,output_dir):
 
 def run_dtifit(in_file,in_bval,in_bvec,in_mask,output_dir):
     """
-    Run dtifit.
+    Run FSLs dtifit.
 
     Inputs
     ======
@@ -611,7 +640,7 @@ def run_dtifit(in_file,in_bval,in_bvec,in_mask,output_dir):
 
     Outputs
     =======
-    dtifit_work_dir: eddy work directory
+    dtifit_work_dir: dtifit work directory
     """
     name = '03_dtifit'
     # Run dtifit on output
@@ -627,6 +656,36 @@ def run_dtifit(in_file,in_bval,in_bvec,in_mask,output_dir):
     )
     dtifit.base_dir = output_dir
     dtifit.run()
+
+    return os.path.join(output_dir,name)
+
+def run_rd(dtifit_output_dir):
+    """
+    Calculate radial diffusitivity (RD). 
+    RD = (L2 + L3) / 2.
+
+    Outputs to the same directory as dtifit.
+
+    Inputs
+    ======
+    dtifit_output_dir: output directory of FSLs dtifit
+    """
+    l2_file = glob.glob(os.path.join(dtifit_output_dir,"*L2*.nii.gz"))[0]
+    l3_file = glob.glob(os.path.join(dtifit_output_dir,"*L3*.nii.gz"))[0]
+    output_file = l2_file.replace("L2","RD")
+
+    fsl_rd = pe.Node(
+        fsl.MultiImageMaths(
+            in_file=l2_file,
+            op_string="-add %s -div 2",
+            operand_files=l3_file,
+            out_file=output_file,
+            output_type="NIFTI_GZ"
+        ), 
+        name='fslmaths'
+    )
+    fsl_rd.base_dir = dtifit_output_dir
+    fsl_rd.run()
 
     return os.path.join(output_dir,name)
 

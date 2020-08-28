@@ -223,6 +223,9 @@ bedpostx_output_dir = workflows.run_bedpostx(
     subject_work_dir
 )
 
+# Radial diffusitivity
+workflows.run_rd(dtifit_output_dir)
+
 print("Output results to derivatives directory")
 outputs.to_derivatives(
     data, 
