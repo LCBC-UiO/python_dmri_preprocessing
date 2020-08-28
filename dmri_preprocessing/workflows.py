@@ -3,6 +3,7 @@
 
 import os
 import shutil
+import glob
 
 import nipype.pipeline.engine as pe 
 
