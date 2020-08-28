@@ -687,7 +687,7 @@ def run_rd(dtifit_output_dir):
     fsl_rd.base_dir = dtifit_output_dir
     fsl_rd.run()
 
-    return os.path.join(output_dir,name)
+    return dtifit_output_dir
 
 def run_bedpostx(in_file,in_bval,in_bvec,in_mask,bedpostx_parameters,output_dir):
     """
