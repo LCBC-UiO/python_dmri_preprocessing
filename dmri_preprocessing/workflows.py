@@ -712,7 +712,7 @@ def run_bedpostx(in_file,in_bval,in_bvec,in_mask,bedpostx_parameters,output_dir)
             dwi = in_file,
             bvals = in_bval,
             bvecs = in_bvec,
-            n_fibres = bedpostx_parameters['n_fibres'],
+            n_fibers = bedpostx_parameters['n_fibers'],
             mask = in_mask,
             output_type = "NIFTI_GZ",
             burn_in = bedpostx_parameters['burn_in'],
