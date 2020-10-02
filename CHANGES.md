@@ -1,3 +1,10 @@
+0.1.0 (October 02, 2020)
+========================
+
+  * [ENH] Add radial diffusivity (RD) to the outputs (#15)
+  * [FIX] Correct negligible difference between fmap and dwi voxel size. (#19)
+
+
 0.0.5 (April 24, 2020)
 ======================
 
