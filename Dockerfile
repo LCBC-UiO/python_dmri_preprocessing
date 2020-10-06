@@ -184,9 +184,13 @@ ENV AFNI_INSTALLDIR=/usr/lib/afni \
     MRTRIX_NTHREADS=1 \
     IS_DOCKER_8395080871=1
 
+# Install python_dmri_preprocessing
+COPY . /src/dmri_preprocessing
+pip install --no-cache-dir "/src/dmri_preprocessing"
+
 RUN ldconfig
 WORKDIR /tmp/
-ENTRYPOINT ["/usr/local/miniconda/bin/qsiprep"]
+ENTRYPOINT ["/usr/local/miniconda/bin/dmri_preprocessing"]
 
 ARG BUILD_DATE
 ARG VCS_REF
