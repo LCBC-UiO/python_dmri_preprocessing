@@ -118,9 +118,9 @@ RUN mkdir /opt/cmake \
     && rm -rf /opt/cmake /usr/local/bin/cmake
 
 # Create a shared $HOME directory
-RUN useradd -m -s /bin/bash -G users qsiprep
-WORKDIR /home/qsiprep
-ENV HOME="/home/qsiprep"
+RUN useradd -m -s /bin/bash -G users dmri_preprocessing
+WORKDIR /home/dmri_preprocessing
+ENV HOME="/home/dmri_preprocessing"
 
 # Installing bids-validator
 RUN npm install -g bids-validator@1.2.3
@@ -172,7 +172,7 @@ WORKDIR /root/
 RUN find $HOME -type d -exec chmod go=u {} + && \
     find $HOME -type f -exec chmod go=u {} +
 
-RUN ln -s /opt/fsl-6.0.3/bin/eddy_cuda9.1 /opt/fsl-6.0.4/bin/eddy_cuda
+RUN ln -s /opt/fsl-6.0.4/bin/eddy_cuda9.1 /opt/fsl-6.0.4/bin/eddy_cuda
 
 ENV AFNI_INSTALLDIR=/usr/lib/afni \
     PATH=${PATH}:/usr/lib/afni/bin \
@@ -186,7 +186,7 @@ ENV AFNI_INSTALLDIR=/usr/lib/afni \
 
 # Install python_dmri_preprocessing
 COPY . /src/dmri_preprocessing
-pip install --no-cache-dir "/src/dmri_preprocessing"
+RUN pip install --no-cache-dir "/src/dmri_preprocessing"
 
 RUN ldconfig
 WORKDIR /tmp/
@@ -204,7 +204,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 
 # Make singularity mount directories
 RUN  mkdir -p /sngl/data \
-  && mkdir /sngl/qsiprep-output \
+  && mkdir /sngl/dmri_preprocessing-output \
   && mkdir /sngl/out \
   && mkdir /sngl/scratch \
   && mkdir /sngl/spec \
