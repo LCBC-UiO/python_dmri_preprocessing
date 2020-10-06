@@ -68,3 +68,6 @@ python dmri_preprocessing.py data_in data_out participant \
     -w work_dir \
     --n_cpus 2
 ```
+
+## Other
+Code is inspired by [qsiprep](https://github.com/PennBBL/qsiprep).
