@@ -53,39 +53,15 @@ RUN apt-get update && \
                     imagemagick \
                     software-properties-common \
                     git && \
-    curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
-    apt-get install -y --no-install-recommends \
-      nodejs && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install latest pandoc
-RUN curl -o pandoc-2.2.2.1-1-amd64.deb -sSL "https://github.com/jgm/pandoc/releases/download/2.2.2.1/pandoc-2.2.2.1-1-amd64.deb" && \
-    dpkg -i pandoc-2.2.2.1-1-amd64.deb && \
-    rm pandoc-2.2.2.1-1-amd64.deb
-
-# Install qt5.12.2
-RUN add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial \
-    && apt-get update \
-    && apt install -y --no-install-recommends \
-    freetds-common libclang1-5.0 libllvm5.0 libodbc1 libsdl2-2.0-0 libsndio6.1 \
-    libsybdb5 libxcb-xinerama0 qt5123d qt512base qt512canvas3d \
-    qt512connectivity qt512declarative qt512graphicaleffects \
-    qt512imageformats qt512location qt512multimedia qt512scxml qt512svg \
-    qt512wayland qt512x11extras qt512xmlpatterns qt512charts-no-lgpl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-ENV QT_BASE_DIR="/opt/qt512"
-ENV QTDIR="$QT_BASE_DIR" \
-    PATH="$QT_BASE_DIR/bin:$PATH:/opt/dsi-studio/dsi_studio_64" \
-    LD_LIBRARY_PATH="$QT_BASE_DIR/lib/x86_64-linux-gnu:$QT_BASE_DIR/lib:$LD_LIBRARY_PATH" \
-    PKG_CONFIG_PATH="$QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH"
-
+# Install FSL
 ENV FSLDIR="/opt/fsl-6.0.4" \
     PATH="/opt/fsl-6.0.4/bin:$PATH"
 RUN echo "Downloading FSL ..." \
     && mkdir -p /opt/fsl-6.0.4 \
     && curl -fsSL --retry 5 https://fsl.fmrib.ox.ac.uk/fsldownloads/fsl-6.0.4-centos6_64.tar.gz \
-    | tar -xz -C /opt/fsl-6.0.3 --strip-components 1 \
+    | tar -xz -C /opt/fsl-6.0.4 --strip-components 1 \
     --exclude='fsl/doc' \
     --exclude='fsl/data/atlases' \
     --exclude='fsl/data/possum' \
