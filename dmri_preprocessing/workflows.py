@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # Purpose: Gather all workflow routines here
 
 import os

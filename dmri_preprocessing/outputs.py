@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # Purpose: Handle the transfer from work dir to derivatives
 
 import shutil
