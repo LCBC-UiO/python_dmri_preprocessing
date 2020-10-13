@@ -122,9 +122,6 @@ RUN useradd -m -s /bin/bash -G users dmri_preprocessing
 WORKDIR /home/dmri_preprocessing
 ENV HOME="/home/dmri_preprocessing"
 
-# Installing bids-validator
-RUN npm install -g bids-validator@1.2.3
-
 # Installing and setting up miniconda
 RUN curl -sSLO https://repo.continuum.io/miniconda/Miniconda3-4.5.12-Linux-x86_64.sh && \
     bash Miniconda3-4.5.12-Linux-x86_64.sh -b -p /usr/local/miniconda && \
@@ -186,7 +183,9 @@ ENV AFNI_INSTALLDIR=/usr/lib/afni \
 
 # Install python_dmri_preprocessing
 COPY . /src/dmri_preprocessing
-RUN pip install --no-cache-dir "/src/dmri_preprocessing"
+RUN pip install --no-cache-dir "/src/dmri_preprocessing" \
+    && chmod u+x /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py \
+    && ln -s /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py /usr/local/miniconda/bin/dmri_preprocessing 
 
 RUN ldconfig
 WORKDIR /tmp/
@@ -200,7 +199,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.description="dmri preprocessing" \
       org.label-schema.vcs-ref=$VCS_REF \
       org.label-schema.vcs-url="https://github.com/LCBC-UiO/python_dmri_preprocessing" \
-      org.label-schema.version=$VERSION \
+      org.label-schema.version=$VERSION 
 
 # Make singularity mount directories
 RUN  mkdir -p /sngl/data \
