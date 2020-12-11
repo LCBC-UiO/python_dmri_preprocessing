@@ -151,12 +151,19 @@ RUN conda install -y python=3.7.1 \
                      olefile=0.46 \
                      pillow=6.0.0 \
                      scikit-image=0.14.2 \
-                     nipype=1.4.2 \
                      traits=4.6.0; sync &&  \
     chmod -R a+rX /usr/local/miniconda; sync && \
     chmod +x /usr/local/miniconda/bin/*; sync && \
     conda build purge-all; sync && \
     conda clean -tipsy && sync
+
+RUN pip install pybids==0.10.2 \
+    nipype==1.4.2 \
+    bids-validator==1.4.4 \
+    niworkflows==1.1.12 \
+    nibabel==3.0.2 \
+    nilearn==0.6.2 \
+    niworkflows==1.1.12
 
 # Unless otherwise specified each process should only use one thread - nipype
 # will handle parallelization
@@ -184,7 +191,7 @@ ENV AFNI_INSTALLDIR=/usr/lib/afni \
 # Install python_dmri_preprocessing
 COPY . /src/dmri_preprocessing
 RUN pip install --no-cache-dir "/src/dmri_preprocessing" \
-    && chmod u+x /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py \
+    && chmod 777 /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py \
     && ln -s /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py /usr/local/miniconda/bin/dmri_preprocessing 
 
 RUN ldconfig
