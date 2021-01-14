@@ -30,7 +30,10 @@ def get_mrtrix3_version():
     Might not work for all versions?
     """
     cmd = subprocess.run(["dwidenoise", "-version"], shell=True, capture_output=True)
-    version = cmd.stdout.decode().split("\n")[0].split(",")[1].replace("version","")
+    try:
+        version = cmd.stdout.decode().split("\n")[0].split(",")[1].replace("version","")
+    except:
+        version = 'unknown'
     return version
 
 def get_ants_version():
@@ -39,8 +42,11 @@ def get_ants_version():
     
     Might not work for all versions?
     """
-    cmd = subprocess.run(["antsRegistration -v"], shell=True, capture_output=True)
-    version = cmd.stdout.decode().split("\n")[1].split(" ")[-1]
+    cmd = subprocess.run(["antsRegistration --version"], shell=True, capture_output=True)
+    try:
+        version = cmd.stdout.decode().split("\n")[1].split(" ")[-1]
+    except:
+        version = 'unknown'
     return version
 
 def gather_inputs(data, subject,session,output_dir):
