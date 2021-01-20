@@ -1,3 +1,8 @@
+0.2.0 (January 20, 2021)
+========================
+
+  * [ENH] Add Dockerfile for installing pipeline (#21)
+
 0.1.0 (October 02, 2020)
 ========================
 
