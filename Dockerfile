@@ -160,10 +160,10 @@ RUN conda install -y python=3.7.1 \
 RUN pip install pybids==0.10.2 \
     nipype==1.4.2 \
     bids-validator==1.4.4 \
-    niworkflows==1.1.12 \
-    nibabel==3.0.2 \
+    niworkflows==1.1.3 \
+    nibabel==3.0.0 \
     nilearn==0.6.2 \
-    niworkflows==1.1.12
+    svgutils==0.3.1
 
 # Unless otherwise specified each process should only use one thread - nipype
 # will handle parallelization
