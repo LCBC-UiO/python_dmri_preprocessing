@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # Purpose: Handle the report generation, taken from fmriprep
 
 from jinja2 import Environment, FileSystemLoader

@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 import nibabel as nb
 import numpy as np
 import pandas as pd

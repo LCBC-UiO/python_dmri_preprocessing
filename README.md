@@ -1,13 +1,14 @@
 # python_dmri_preprocessing
+
 ## Installation
-This repository only contains python scripts to run the preprocessing of dMRI data. Only installation of the required python packages are necessary:
+Install using docker:
 ```
-pip install -r requirements.txt
+docker build -t dmri_preprocessing .
 ```
 ## Usage
 Only works on one subject and session at the time. You can't process multiple sessions and/or subjects.
 ```
-usage: dmri_preprocessing.py [-h] [-v] [--participant_label PARTICIPANT_LABEL]
+usage: docker run dmri_preprocessing [-h] [-v] [--participant_label PARTICIPANT_LABEL]
                              [--session_label SESSION_LABEL] [--n_cpus N_CPUS]
                              [--b0-threshold B0_THRESHOLD]
                              [--dwi_denoise_window DWI_DENOISE_WINDOW]
@@ -62,12 +63,22 @@ Other options:
 
 ## Example
 ```
-python dmri_preprocessing.py data_in data_out participant \
+docker run dmri_preprocessing data_in data_out participant \
     --participant_label 01 \
     --session_label 01 \
     -w work_dir \
     --n_cpus 2
 ```
+
+## Preprocessing steps
+
+`dmri_preprocessing` uses `nipype` to run the following processing steps:
+- `dwidenoise` (mrtrix3)
+- `mrdegibbs` (mrtrix3) if we have acquired full k-space data
+- `topup` (fsl)
+- `eddy` (fsl)
+- `N4Biasfield` (ants)
+- `dtifit` (fsl)
 
 ## Other
 Code is inspired by [qsiprep](https://github.com/PennBBL/qsiprep).

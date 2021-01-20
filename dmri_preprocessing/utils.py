@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # Purpose: Gather all utility functions
 
 from bids.layout import BIDSLayout
