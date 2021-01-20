@@ -163,9 +163,14 @@ figures.extend(output_svg)
 
 # mrtrix3 mrdegibbs
 # Only run mrdegibbs if we have acquired full k-space data:
-if data['dwi'][0]['metadata']['PartialFourier'] == 1:
-    output_svg = workflows.run_mrdegibbs(data,n_cpus,pre_hmc_dir)
-    figures.extend(output_svg)
+try:
+    partial_fourier = data['dwi'][0]['metadata']['PartialFourier']
+    if partial_fourier == 1:
+        output_svg = workflows.run_mrdegibbs(data,n_cpus,pre_hmc_dir)
+        figures.extend(output_svg)
+except:
+    print(f"metadata 'PartialFourier' does not exist in .json. Because of \
+    incomplete information we are not running mrdegibbs.")
 
 # Check if and how we should do topup
 topup_options, phase_encoding_directions = utils.check_if_dataset_compatible_with_topup(data)

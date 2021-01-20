@@ -84,8 +84,11 @@ def gather_inputs(data, subject,session,output_dir):
             # - 'ProtocolName','SAR','SeriesNumber','WipMemBlock'
             if i > 0:
                 for label in ['ProtocolName','SAR','SeriesNumber','WipMemBlock']:
-                    data['dwi'][0]['metadata'][label] = str(data['dwi'][0]['metadata'][label]) + "," + \
-                    str(data['dwi'][i]['metadata'][label])
+                    try:
+                        data['dwi'][0]['metadata'][label] = str(data['dwi'][0]['metadata'][label]) + "," + \
+                        str(data['dwi'][i]['metadata'][label])
+                    except:
+                        print(f"Label: {label} does not exist in .json metadata.")
                 del[data['dwi'][i]]
             i += 1
 
