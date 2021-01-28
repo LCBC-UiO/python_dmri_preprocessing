@@ -1,3 +1,8 @@
+0.2.1 (January 28, 2021)
+========================
+
+  * [FIX] IndexError: tuple index out of range if the fmap does not contain multiple frames (#25)
+
 0.2.0 (January 20, 2021)
 ========================
 
