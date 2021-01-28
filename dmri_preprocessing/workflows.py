@@ -241,7 +241,10 @@ def run_topup(data, topup_options, output_dir):
             in_files_fmap.append(fmap['filename'])
             # Add as many entries to the encoding direction file as it is frames
             # in the nifty files
-            fmap_nii_frames = nib.load(fmap['filename']).shape[3]
+            try:
+                fmap_nii_frames = nib.load(fmap['filename']).shape[3]
+            except:
+                fmap_nii_frames = 1
             for i in range(0,fmap_nii_frames):
                 encoding_directions.append(fmap['metadata']['PhaseEncodingDirection'])
                 readout_times.append(fmap['metadata']['TotalReadoutTime'])
