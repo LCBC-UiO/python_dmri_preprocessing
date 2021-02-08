@@ -72,13 +72,45 @@ docker run dmri_preprocessing data_in data_out participant \
 
 ## Preprocessing steps
 
-`dmri_preprocessing` uses `nipype` to run the following processing steps:
-- `dwidenoise` (mrtrix3)
-- `mrdegibbs` (mrtrix3) if we have acquired full k-space data
-- `topup` (fsl)
-- `eddy` (fsl)
-- `N4Biasfield` (ants)
-- `dtifit` (fsl)
+`dmri_preprocessing` is based on nipype v. 1.4.2. It runs the following processing steps:
+- Data info extraction and merging
+- Noise estimation and denoising using Marchenko-Pastur PCA (mrtrix3 `dwidenoise`)
+- Removal of Gibbs ringing artifacts (mrtrix3 `mrdegibbs`)
+- Estimation of susceptibility induced distortions (fsl `topup`)
+- eddy current and movement correction (fsl `eddy`)
+- Bias field correction (ants `N4BiasfieldCorrection`)
+- Fit diffusion tensor modelling with fsl `dtifit`
+- Calculate radial diffusivity using output from fsl `dtifit` 
+
+### Data info extraction and merging
+If we have multiple dwi sequences, the sequences with same phase encoding directions are merged. 
+
+Note: Now, the pipeline only works with the dwi sequences having the same phase encoding direction. If we would have two dwi sequences with opposite directions, the pipeline would only process one of them (ref. #26)
+
+###  Noise estimation and denoising using Marchenko-Pastur PCA
+The pipeline uses `mrtrix3` `dwidenoise` to do Marchenko-Pastur PCA (MP-PCA). The size of the denoising window can be set with the `--dwi_denoise_window` flag. Default is 5.
+
+### Removal of Gibbs ringing artifacts
+The removal of Gibbs ringing artifacts are done on data acquired in full k-space with `mrtrix3` `mrdegibbs`. It checks the field `PartialFourier` in the `.json` file.
+
+### Estimation of susceptibility distortion correction
+The susceptibility distortion correction (sdc) is done by `fsl` `topup`. The phase encoding maps used for the estimations are chosen with the following order:
+1. single band references (sbref) in both phase encoding directions
+2. stand alone fieldmaps acquired in both phase encoding directions
+3. b0 frames from dwi merged with phase encoding maps in the opposite direction.
+If we do not have opposite phase encocing direction maps, the estimation of sdc is not run. 
+
+### Eddy current and movement correction
+`fsl` `eddy` is used for eddy current and movement correction. This step also applies the sdc if `topup` was done. `eddy` runs with standard parameters, except that the `--repol` and `--cnr_maps` flags are set to `True`.
+
+ ### Bias field correction
+This step estimates the bias field correction on the first b0 image, then we apply this correction on all the frames inside the dwi using `fslmaths`.
+
+### Diffusion tensor modelling
+Diffusion tensor modelling is done by `fsl` `dtifit` which fits a tensor model at each voxel.
+
+### Radial diffusitiivity
+The radial diffusitivity was calculated by using fslmaths to average eigenvalue maps 2 and 3: (l2 + l3)/2
 
 ## Other
 Code is inspired by [qsiprep](https://github.com/PennBBL/qsiprep).
