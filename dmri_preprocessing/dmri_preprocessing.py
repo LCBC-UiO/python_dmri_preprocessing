@@ -84,8 +84,7 @@ def get_parser():
         action='store',
         type=int,
         default=5,
-        help='window size in voxels for ``dwidenoise``. Must be odd. '
-             'If 0, ``dwidwenoise`` will not be run')
+        help='window size in voxels for ``dwidenoise``. Must be odd.')
     #g_conf.add_argument(
     #    '--unringing-method', '--unringing-method',
     #    action='store',
