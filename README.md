@@ -53,7 +53,7 @@ Workflow configuration:
                         results. (default: 100)
   --dwi_denoise_window DWI_DENOISE_WINDOW, --dwi-denoise-window DWI_DENOISE_WINDOW
                         window size in voxels for ``dwidenoise``. Must be odd.
-                        If 0, ``dwidwenoise`` will not be run (default: 5)
+                        (default: 5)
 
 Other options:
   -w WORK_DIR, --work-dir WORK_DIR, --work_dir WORK_DIR
