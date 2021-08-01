@@ -8,7 +8,7 @@ import pandas as pd
 import json
 import glob
 
-from report.plots import plot_dMRI_confounds_carpet, plot_gradients
+from dmri_preprocessing.report.plots import plot_dMRI_confounds_carpet, plot_gradients
 
 def create_confounds_tsv(output_dir_dwi,sub_ses_basename,eddy_output_dir,eddy_input):
     """

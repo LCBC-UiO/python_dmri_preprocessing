@@ -7,10 +7,10 @@ from argparse import ArgumentParser
 from argparse import ArgumentDefaultsHelpFormatter
 
 # own functions
-import utils
-import workflows
-import outputs
-import report.reports
+import dmri_preprocessing.utils
+import dmri_preprocessing.workflows
+import dmri_preprocessing.outputs
+import dmri_preprocessing.report.reports
 
 application_name = "dmri_preprocessing"
 version = "0.2.1"
@@ -106,106 +106,107 @@ def get_parser():
 
     return parser
 
-opts = get_parser().parse_args()
+def main():
+    opts = get_parser().parse_args()
 
-BIDS_DIR = opts.bids_dir
-OUTPUT_DIR = opts.output_dir
-WORK_DIR = opts.work_dir
+    BIDS_DIR = opts.bids_dir
+    OUTPUT_DIR = opts.output_dir
+    WORK_DIR = opts.work_dir
 
-subject = opts.participant_label.replace("sub-","")
-session = opts.session_label.replace("ses-","")
+    subject = opts.participant_label.replace("sub-","")
+    session = opts.session_label.replace("ses-","")
 
 
-# Settings
-b0_threshold = opts.b0_threshold
-n_cpus = opts.n_cpus
-denoise_filter_length = (
-    opts.dwi_denoise_window,
-    opts.dwi_denoise_window,
-    opts.dwi_denoise_window
-)
+    # Settings
+    b0_threshold = opts.b0_threshold
+    n_cpus = opts.n_cpus
+    denoise_filter_length = (
+        opts.dwi_denoise_window,
+        opts.dwi_denoise_window,
+        opts.dwi_denoise_window
+    )
 
-bids_input = os.path.join(BIDS_DIR,"sub-"+subject,"ses-"+session)
-assert os.path.exists(bids_input) == True, "Input dir: %s does not exist." % bids_input
+    bids_input = os.path.join(BIDS_DIR,"sub-"+subject,"ses-"+session)
+    assert os.path.exists(bids_input) == True, "Input dir: %s does not exist." % bids_input
 
-subject_work_dir = os.path.join(WORK_DIR, application_name + "_wf","sub-"+str(subject)+"_ses-"+str(session)+"_wf")
-os.makedirs(subject_work_dir,exist_ok=True)
+    subject_work_dir = os.path.join(WORK_DIR, application_name + "_wf","sub-"+str(subject)+"_ses-"+str(session)+"_wf")
+    os.makedirs(subject_work_dir,exist_ok=True)
 
-# Get overview of data
-layout, subject_data = utils.get_bids_layout(BIDS_DIR,subject,session)
-data = utils.get_overview_of_data(subject_data, layout, b0_threshold)
+    # Get overview of data
+    layout, subject_data = utils.get_bids_layout(BIDS_DIR,subject,session)
+    data = utils.get_overview_of_data(subject_data, layout, b0_threshold)
 
-data_raw = copy.deepcopy(data)
-data_raw['bids_dir'] = BIDS_DIR
-data_raw['subject'] = subject
-data_raw['session'] = session
-data_raw['denoise_filer_length'] = denoise_filter_length
-data_raw['fsl_version'] = workflows.get_fsl_version()
-data_raw['mrtrix3_version'] = workflows.get_mrtrix3_version()
-data_raw['ants_version'] = workflows.get_ants_version()
-data_raw['application_version'] = version
+    data_raw = copy.deepcopy(data)
+    data_raw['bids_dir'] = BIDS_DIR
+    data_raw['subject'] = subject
+    data_raw['session'] = session
+    data_raw['denoise_filer_length'] = denoise_filter_length
+    data_raw['fsl_version'] = workflows.get_fsl_version()
+    data_raw['mrtrix3_version'] = workflows.get_mrtrix3_version()
+    data_raw['ants_version'] = workflows.get_ants_version()
+    data_raw['application_version'] = version
 
-# 00_pre_hmc, here we will make the following:
-# - input dwi: sub-id_ses-id_dwi.nii.gz
-# - input bvals and bvecs: sub-id_ses-id_dwi.[bvec,bval]
-# - All input needed for head motion correcton (hmc)
-pre_hmc_dir = os.path.join(subject_work_dir,'00_pre_hmc')
-os.makedirs(pre_hmc_dir,exist_ok=True)
+    # 00_pre_hmc, here we will make the following:
+    # - input dwi: sub-id_ses-id_dwi.nii.gz
+    # - input bvals and bvecs: sub-id_ses-id_dwi.[bvec,bval]
+    # - All input needed for head motion correcton (hmc)
+    pre_hmc_dir = os.path.join(subject_work_dir,'00_pre_hmc')
+    os.makedirs(pre_hmc_dir,exist_ok=True)
 
-workflows.gather_inputs(data,subject,session,pre_hmc_dir)
+    workflows.gather_inputs(data,subject,session,pre_hmc_dir)
 
-figures = []
+    figures = []
 
-# mrtrix3 dwidenoise
-output_svg = workflows.run_dwidenoise(data,denoise_filter_length,n_cpus,pre_hmc_dir)
-figures.extend(output_svg)
+    # mrtrix3 dwidenoise
+    output_svg = workflows.run_dwidenoise(data,denoise_filter_length,n_cpus,pre_hmc_dir)
+    figures.extend(output_svg)
 
-# mrtrix3 mrdegibbs
-# Only run mrdegibbs if we have acquired full k-space data:
-try:
-    partial_fourier = data['dwi'][0]['metadata']['PartialFourier']
-    if partial_fourier == 1:
-        output_svg = workflows.run_mrdegibbs(data,n_cpus,pre_hmc_dir)
-        figures.extend(output_svg)
-except:
-    print(f"metadata 'PartialFourier' does not exist in .json. Because of \
-    incomplete information we are not running mrdegibbs.")
+    # mrtrix3 mrdegibbs
+    # Only run mrdegibbs if we have acquired full k-space data:
+    try:
+        partial_fourier = data['dwi'][0]['metadata']['PartialFourier']
+        if partial_fourier == 1:
+            output_svg = workflows.run_mrdegibbs(data,n_cpus,pre_hmc_dir)
+            figures.extend(output_svg)
+    except:
+        print(f"metadata 'PartialFourier' does not exist in .json. Because of \
+        incomplete information we are not running mrdegibbs.")
 
-# Check if and how we should do topup
-topup_options, phase_encoding_directions = utils.check_if_dataset_compatible_with_topup(data)
+    # Check if and how we should do topup
+    topup_options, phase_encoding_directions = utils.check_if_dataset_compatible_with_topup(data)
 
-data_raw['topup_options'] = topup_options
-data_raw['phase_encoding_directions'] = phase_encoding_directions
+    data_raw['topup_options'] = topup_options
+    data_raw['phase_encoding_directions'] = phase_encoding_directions
 
-# topup
-if topup_options['do_topup']:
-    output_svg = workflows.run_topup(data,topup_options,pre_hmc_dir)
-    figures.append(output_svg)
+    # topup
+    if topup_options['do_topup']:
+        output_svg = workflows.run_topup(data,topup_options,pre_hmc_dir)
+        figures.append(output_svg)
 
-# eddy
-eddy_inputs = workflows.prepare_eddy(data,topup_options,phase_encoding_directions,pre_hmc_dir)
-eddy_inputs['in_file'] = data['dwi'][0]['filename']
-eddy_inputs['in_bval'] = data['in_bval']
-eddy_inputs['in_bvec'] = data['in_bvec']
-eddy_output_dir = workflows.run_eddy(eddy_inputs,topup_options,subject_work_dir,n_cpus)
+    # eddy
+    eddy_inputs = workflows.prepare_eddy(data,topup_options,phase_encoding_directions,pre_hmc_dir)
+    eddy_inputs['in_file'] = data['dwi'][0]['filename']
+    eddy_inputs['in_bval'] = data['in_bval']
+    eddy_inputs['in_bvec'] = data['in_bvec']
+    eddy_output_dir = workflows.run_eddy(eddy_inputs,topup_options,subject_work_dir,n_cpus)
 
-eddy_output = {}
-data['dwi'][0]['filename'] = os.path.join(eddy_output_dir,'eddy_corrected.nii.gz')
-eddy_output['rotated_bvec'] = os.path.join(eddy_output_dir,"eddy_corrected.eddy_rotated_bvecs")
-eddy_output['cnr_maps'] = os.path.join(eddy_output_dir,"eddy_corrected.eddy_cnr_maps.nii.gz")
+    eddy_output = {}
+    data['dwi'][0]['filename'] = os.path.join(eddy_output_dir,'eddy_corrected.nii.gz')
+    eddy_output['rotated_bvec'] = os.path.join(eddy_output_dir,"eddy_corrected.eddy_rotated_bvecs")
+    eddy_output['cnr_maps'] = os.path.join(eddy_output_dir,"eddy_corrected.eddy_cnr_maps.nii.gz")
 
-# N4biasfield correction!
-output_svg = workflows.run_n4biasfieldcorrection(data,subject_work_dir)
-figures.extend(output_svg)
+    # N4biasfield correction!
+    output_svg = workflows.run_n4biasfieldcorrection(data,subject_work_dir)
+    figures.extend(output_svg)
 
-# dtifit
-dtifit_output_dir = workflows.run_dtifit(data['dwi'][0]['filename'],data['in_bval'],eddy_output['rotated_bvec'], eddy_inputs['in_mask'],subject_work_dir)
+    # dtifit
+    dtifit_output_dir = workflows.run_dtifit(data['dwi'][0]['filename'],data['in_bval'],eddy_output['rotated_bvec'], eddy_inputs['in_mask'],subject_work_dir)
 
-# Radial diffusitivity
-workflows.run_rd(dtifit_output_dir)
+    # Radial diffusitivity
+    workflows.run_rd(dtifit_output_dir)
 
-print("Output results to derivatives directory")
-outputs.to_derivatives(data, data_raw,OUTPUT_DIR,application_name,eddy_output_dir,dtifit_output_dir,eddy_inputs,figures)
+    print("Output results to derivatives directory")
+    outputs.to_derivatives(data, data_raw,OUTPUT_DIR,application_name,eddy_output_dir,dtifit_output_dir,eddy_inputs,figures)
 
-# Create report
-report.reports.create_report(data, data_raw, OUTPUT_DIR, application_name)
+    # Create report
+    report.reports.create_report(data, data_raw, OUTPUT_DIR, application_name)
