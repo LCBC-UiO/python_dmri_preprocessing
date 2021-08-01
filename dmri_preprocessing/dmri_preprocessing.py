@@ -2,6 +2,7 @@
 
 import os
 import copy
+import sys
 
 from argparse import ArgumentParser
 from argparse import ArgumentDefaultsHelpFormatter
@@ -16,7 +17,7 @@ application_name = "dmri_preprocessing"
 version = "0.2.1"
 
 # Modified from qsiprep
-def get_parser():
+def parse_args(args):
     """Build parser object"""
     #from ..__about__ import __version__
 
@@ -53,12 +54,14 @@ def get_parser():
         '--participant_label',
         '--participant-label',
         action='store',
-        help='a single subject identifier (the sub- prefix can be removed)')
+        help='a single subject identifier (the sub- prefix can be removed)',
+        required=True)
     g_bids.add_argument(
         '--session_label',
         '--session-label',
         action='store',
-        help='a single session identifier (the ses- prefix can be removed)')
+        help='a single session identifier (the ses- prefix can be removed)',
+        required=True)
         
     g_perfm = parser.add_argument_group('Options to handle performance')
     g_perfm.add_argument(
@@ -85,29 +88,20 @@ def get_parser():
         type=int,
         default=5,
         help='window size in voxels for ``dwidenoise``. Must be odd.')
-    #g_conf.add_argument(
-    #    '--unringing-method', '--unringing-method',
-    #    action='store',
-    #    choices=['none', 'mrdegibbs'],
-    #    help='Method for Gibbs-ringing removal.\n - none: no action\n - mrdegibbs: '
-    #         'use mrdegibbs from mrtrix3')
-    #g_conf.add_argument(
-    #    '--dwi-no-biascorr', '--dwi_no_biascorr',
-    #    action='store_true',
-    #    help='skip b0-based dwi spatial bias correction')
-
+   
     g_other = parser.add_argument_group('Other options')
     g_other.add_argument(
         '-w',
         '--work-dir', '--work_dir',
         type=str,
         action='store',
-        help='path where intermediate results should be stored')
+        help='path where intermediate results should be stored',
+        required=True)
 
-    return parser
+    return parser.parse_args(args)
 
 def main():
-    opts = get_parser().parse_args()
+    opts = parse_args(sys.argv[1:])
 
     BIDS_DIR = opts.bids_dir
     OUTPUT_DIR = opts.output_dir
@@ -115,7 +109,6 @@ def main():
 
     subject = opts.participant_label.replace("sub-","")
     session = opts.session_label.replace("ses-","")
-
 
     # Settings
     b0_threshold = opts.b0_threshold
