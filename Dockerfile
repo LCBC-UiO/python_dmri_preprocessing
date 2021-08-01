@@ -190,9 +190,7 @@ ENV AFNI_INSTALLDIR=/usr/lib/afni \
 
 # Install python_dmri_preprocessing
 COPY . /src/dmri_preprocessing
-RUN pip install --no-cache-dir "/src/dmri_preprocessing" \
-    && chmod 777 /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py \
-    && ln -s /usr/local/miniconda/lib/python3.7/site-packages/dmri_preprocessing/dmri_preprocessing.py /usr/local/miniconda/bin/dmri_preprocessing 
+RUN pip install --no-cache-dir "/src/dmri_preprocessing" 
 
 RUN ldconfig
 WORKDIR /tmp/
