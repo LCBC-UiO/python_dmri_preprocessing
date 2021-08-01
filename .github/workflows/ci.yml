@@ -36,3 +36,9 @@ jobs:
       - name: Run dmri_preprocessing from command line
         shell: bash -l {0}
         run: dmri_preprocessing --version
+      - name: Install pytest
+        shell: bash -l {0}
+        run: conda install pytest
+      - name: Run tests
+        shell: bash -l {0}
+        run: pytest
