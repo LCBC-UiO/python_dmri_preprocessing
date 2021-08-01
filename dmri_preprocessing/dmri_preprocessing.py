@@ -7,10 +7,10 @@ from argparse import ArgumentParser
 from argparse import ArgumentDefaultsHelpFormatter
 
 # own functions
-import utils
-import workflows
-import outputs
-import report.reports
+import dmri_preprocessing.utils
+import dmri_preprocessing.workflows
+import dmri_preprocessing.outputs
+import dmri_preprocessing.report.reports
 
 application_name = "dmri_preprocessing"
 version = "0.2.1"

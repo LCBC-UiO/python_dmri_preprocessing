@@ -11,11 +11,11 @@ import nipype.pipeline.engine as pe
 from nipype.interfaces import fsl
 from nipype.interfaces import mrtrix3
 from nipype.interfaces import ants
-from report.plots import plot_before_after_svg
+from dmri_preprocessing.report.plots import plot_before_after_svg
 import subprocess
 import nibabel as nib
 
-import utils
+import dmri_preprocessing.utils
 
 def get_fsl_version():
     """
