@@ -141,9 +141,9 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     sub_ses_basename = sub + "_" + ses + "_space-orig_desc-"
 
     # Outputs to take care of:
-    # keeo all eddy output and save to output_dir_eddy
+    # keep all eddy output and save to output_dir_eddy
     for eddy_output_p in glob.glob(os.path.join(eddy_output_dir,'eddy_corrected.*')):
-        eddy_derivative = os.path.join(output_dir_eddy,os.path.basname(eddy_output))
+        eddy_derivative = os.path.join(output_dir_eddy,os.path.basename(eddy_output))
         shutil.copy(eddy_output_p,eddy_derivative)
     
     # create links from eddy to dwi dir
