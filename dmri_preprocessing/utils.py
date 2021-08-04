@@ -110,7 +110,7 @@ def check_if_dataset_compatible_with_topup(data_overview):
     # or one fieldmap, and one b0 inside dwi sequence
     topup_options = {}
     # options
-    topup_options['do_topup'] = True
+    topup_options['do_topup'] = False
 
     phase_encoding_directions = {}
     for data_type in data_overview:
@@ -127,20 +127,25 @@ def check_if_dataset_compatible_with_topup(data_overview):
 
     # Check encoding directions for all data
     dwi_fmap_encoding_directions = []
+    dwi_fmap_data_types = []
     for data_type in phase_encoding_directions:
         if(check_opposite_directions(phase_encoding_directions[data_type])):
             topup_options["only_"+data_type] = True
+            topup_options['do_topup'] = True
         else:
             topup_options["only_"+data_type] = False
 
         if data_type == 'dwi' or data_type == 'fmap':
             dwi_fmap_encoding_directions.extend(phase_encoding_directions[data_type])
-
-    if(check_opposite_directions(dwi_fmap_encoding_directions)):
+            if len(phase_encoding_directions[data_type]) > 0:
+                dwi_fmap_data_types.append(data_type)
+    
+    if (check_opposite_directions(dwi_fmap_encoding_directions) 
+        and len(dwi_fmap_data_types) == 2):
         topup_options['dwi_fmap_combined'] = True
+        topup_options['do_topup'] = True
     else:
         topup_options['dwi_fmap_combined'] = False
-        topup_options['do_topup'] = False
     
     return(topup_options, phase_encoding_directions)
 
