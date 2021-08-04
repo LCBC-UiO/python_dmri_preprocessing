@@ -54,6 +54,7 @@ jobs:
         shell: bash -l {0}
         run: pytest
       - name: System test - build docker image
+        shell: bash -l {0}
         run: @docker build . -t dmri_preprocessing:test
       - name: System test - run dmri_preprocessing with test data downloaded
         shell: bash -l {0}
