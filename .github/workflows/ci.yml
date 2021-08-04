@@ -2,7 +2,7 @@ name: continous-integration
 on: [push]
 jobs:
   install-package:
-    name: Install dmri_preprocessing package
+    name: Install package, download test data, and test
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v2
@@ -39,7 +39,7 @@ jobs:
       - name: Install datalad
         shell: bash -l {0}
         run: conda install -y -c conda-forge datalad
-      - name: Get dataset ds003424
+      - name: Get dataset ds002080
         shell: bash -l {0}
         run: |
           git config --global user.email "github-actions@github.com" \
