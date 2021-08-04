@@ -36,14 +36,6 @@ jobs:
       - name: Run dmri_preprocessing from command line
         shell: bash -l {0}
         run: dmri_preprocessing --version
-  get-test-dataset:
-    name: Get test data ds003424 with datalad
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          miniconda-version: "latest"
-          activate-environment: foo
       - name: Install datalad
         shell: bash -l {0}
         run: conda install -y -c conda-forge datalad
@@ -53,14 +45,6 @@ jobs:
           git config --global user.email "github-actions@github.com" \
           && git config --global user.name "Github Actions" \
           && make test_data 
-  run-tests:
-    name: Run tests
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          miniconda-version: "latest"
-          activate-environment: foo
       - name: Install pytest
         shell: bash -l {0}
         run: conda install pytest
