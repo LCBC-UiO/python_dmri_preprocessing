@@ -53,11 +53,3 @@ jobs:
       - name: Run tests
         shell: bash -l {0}
         run: pytest
-      - name: System test - build docker image
-        shell: bash -l {0}
-        run: docker build . -t dmri_preprocessing:test
-      - name: System test - run dmri_preprocessing with test data downloaded
-        shell: bash -l {0}
-        run: | 
-          docker run -v $PWD:$PWD dmri_preprocessing:test $PWD/tests/ds002080 $PWD/tests/ds002080/derivatives participant \
-            --participant_label sub-CON02 --session_label ses-postop --work_dir tests/work
