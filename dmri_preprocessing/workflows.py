@@ -567,6 +567,21 @@ def run_eddy(eddy_inputs,topup_options,output_dir,n_cpus):
         )
         eddy.base_dir = output_dir
         eddy.run()
+
+    # Run EddyQuad
+    quad = fsl.EddyQuad()
+    quad.inputs.base_name  = os.path.join(output_dir,name,'eddy_corrected')
+    quad.inputs.idx_file   = eddy_inputs['in_index']
+    quad.inputs.param_file = eddy_inputs['in_acqp']
+    quad.inputs.mask_file  = eddy_inputs['in_mask']
+    quad.inputs.bval_file  = eddy_inputs['in_bval']
+    quad.inputs.bvec_file  = eddy_inputs['in_bvec']
+    quad.inputs.output_dir = os.path.join(output_dir,name,'qc')
+    if topup_options['do_topup']:
+        quad.inputs.field      = 'fieldmap_phase_fslprepared.nii'
+    quad.inputs.verbose    = True
+
+    res = quad.run()
     return os.path.join(output_dir,name)
 
 def run_n4biasfieldcorrection(data,output_dir):

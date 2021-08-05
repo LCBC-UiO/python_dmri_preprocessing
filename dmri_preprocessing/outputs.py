@@ -166,6 +166,9 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     for other_output in other_outputs_dict:
         other_derivative = os.path.join(output_dir_dwi,other_outputs_dict[other_output])
         shutil.copy(other_output,other_derivative)
+    
+    # Copy eddy_quad qc folder 
+    shutil.copytree(os.path.join(eddy_output_dir,'qc'),os.path.join(output_dir_session,"qc"))
 
     # Create confounds tsv parameters.
     confounds_file = create_confounds_tsv(output_dir_dwi,sub_ses_basename,eddy_output_dir,eddy_input)
