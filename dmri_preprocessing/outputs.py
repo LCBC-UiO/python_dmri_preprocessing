@@ -134,6 +134,7 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
 
     os.makedirs(output_dir_dwi,exist_ok=True)
     os.makedirs(output_dir_figures,exist_ok=True)
+    os.makedirs(output_dir_eddy,exist_ok=True)
     
     # Create dataset_description.json
     create_dataset_description(data_raw,output_dir_base,application_name)
@@ -143,7 +144,7 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     # Outputs to take care of:
     # keep all eddy output and save to output_dir_eddy
     for eddy_output_p in glob.glob(os.path.join(eddy_output_dir,'eddy_corrected.*')):
-        eddy_derivative = os.path.join(output_dir_eddy,os.path.basename(eddy_output))
+        eddy_derivative = os.path.join(output_dir_eddy,os.path.basename(eddy_output_p))
         shutil.copy(eddy_output_p,eddy_derivative)
     
     # create links from eddy to dwi dir
