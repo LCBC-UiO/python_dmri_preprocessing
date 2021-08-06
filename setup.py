@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="python_dmri_preprocessing-fredrmag", # Replace with your own username
-    version="0.2.1",
+    version="0.3.0",
     author="Fredrik Magnussen",
     author_email="fredrik.magnussen@psykologi.uio.no",
     description="Preprocessing of dMRI data",

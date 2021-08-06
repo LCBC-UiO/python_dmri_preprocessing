@@ -14,7 +14,7 @@ from dmri_preprocessing import outputs
 from dmri_preprocessing.report import reports
 
 application_name = "dmri_preprocessing"
-version = "0.2.1"
+version = "0.3.0"
 
 # Modified from qsiprep
 def parse_args(args):

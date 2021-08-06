@@ -1,3 +1,13 @@
+0.3.0 (August 06, 2021)
+=======================
+
+  * [ENH] Add eddy output to derivatives and run eddy_quad (#35)
+  * ENH: Initial tests on parser and utils (#33)
+  * FIX: dmri_preprocessing import statements (#32)
+  * [ENH] Test package build with github actions (#31)
+  * [MAINT] Update documentation of pipeline (#29)
+  * [MAINT] Remove misleading documentation (#28)
+
 0.2.1 (January 28, 2021)
 ========================
 
