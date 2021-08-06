@@ -402,6 +402,7 @@ def prepare_eddy(data,topup_options,phase_encoding_directions,output_dir):
         topup_basename = os.path.join(output_dir,"topup","AP_PA")
         eddy_inputs['in_acqp'] = topup_basename + '_encfile.txt'
         eddy_inputs['in_topup_fieldcoef'] = topup_basename + "_base_fieldcoef.nii.gz"
+        eddy_inputs['in_topup_field'] = topup_basename + "_field.nii.gz"
         eddy_inputs['in_topup_movpar'] = topup_basename + "_base_movpar.txt"
         eddy_inputs['in_topup_corrected'] = topup_basename + "_corrected.nii.gz"
 
@@ -567,6 +568,22 @@ def run_eddy(eddy_inputs,topup_options,output_dir,n_cpus):
         )
         eddy.base_dir = output_dir
         eddy.run()
+
+    # Run EddyQuad
+    output_quad = os.path.join(output_dir,name,'qc')
+    if not os.path.exists(output_quad):
+        quad = fsl.EddyQuad()
+        quad.inputs.base_name  = os.path.join(output_dir,name,'eddy_corrected')
+        quad.inputs.idx_file   = eddy_inputs['in_index']
+        quad.inputs.param_file = eddy_inputs['in_acqp']
+        quad.inputs.mask_file  = eddy_inputs['in_mask']
+        quad.inputs.bval_file  = eddy_inputs['in_bval']
+        quad.inputs.bvec_file  = eddy_inputs['in_bvec']
+        quad.inputs.output_dir = output_quad
+        if topup_options['do_topup']:
+            quad.inputs.field  = eddy_inputs['in_topup_field']
+        quad.inputs.verbose    = True
+        res = quad.run()
     return os.path.join(output_dir,name)
 
 def run_n4biasfieldcorrection(data,output_dir):

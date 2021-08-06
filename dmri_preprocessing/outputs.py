@@ -130,9 +130,11 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     output_dir_session = os.path.join(output_dir_base,sub,ses)
     output_dir_dwi = os.path.join(output_dir_session,"dwi")
     output_dir_figures = os.path.join(output_dir_session,"figures")
+    output_dir_eddy = os.path.join(output_dir_session,"eddy")
 
     os.makedirs(output_dir_dwi,exist_ok=True)
     os.makedirs(output_dir_figures,exist_ok=True)
+    os.makedirs(output_dir_eddy,exist_ok=True)
     
     # Create dataset_description.json
     create_dataset_description(data_raw,output_dir_base,application_name)
@@ -140,14 +142,20 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     sub_ses_basename = sub + "_" + ses + "_space-orig_desc-"
 
     # Outputs to take care of:
+    # keep all eddy output and save to output_dir_eddy
+    for eddy_output_p in glob.glob(os.path.join(eddy_output_dir,'eddy_corrected.*')):
+        eddy_derivative = os.path.join(output_dir_eddy,os.path.basename(eddy_output_p))
+        shutil.copy(eddy_output_p,eddy_derivative)
+    
+    # create links from eddy to dwi dir
     eddy_output_dict = {
         'eddy_corrected.eddy_rotated_bvecs': sub_ses_basename + 'preproc_dwi.bvec',
         'eddy_corrected.eddy_cnr_maps.nii.gz': sub_ses_basename + 'preproc_cnr.nii.gz'
     }
     for eddy_output in eddy_output_dict:
-        eddy_output_p = os.path.join(eddy_output_dir,eddy_output)
+        eddy_output_p = os.path.join('..',os.path.basename(output_dir_eddy),eddy_output)
         eddy_derivative = os.path.join(output_dir_dwi,eddy_output_dict[eddy_output])
-        shutil.copy(eddy_output_p,eddy_derivative)
+        os.symlink(eddy_output_p,eddy_derivative)
 
     other_outputs_dict = {
         data['dwi'][0]['filename']: sub_ses_basename + 'preproc_dwi.nii.gz',
@@ -158,6 +166,9 @@ def to_derivatives(data, data_raw, derivatives_dir, application_name, eddy_outpu
     for other_output in other_outputs_dict:
         other_derivative = os.path.join(output_dir_dwi,other_outputs_dict[other_output])
         shutil.copy(other_output,other_derivative)
+    
+    # Copy eddy_quad qc folder 
+    shutil.copytree(os.path.join(eddy_output_dir,'qc'),os.path.join(output_dir_session,"qc"))
 
     # Create confounds tsv parameters.
     confounds_file = create_confounds_tsv(output_dir_dwi,sub_ses_basename,eddy_output_dir,eddy_input)

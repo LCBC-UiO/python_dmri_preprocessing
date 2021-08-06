@@ -11,7 +11,7 @@ from argparse import ArgumentDefaultsHelpFormatter
 from dmri_preprocessing import utils
 from dmri_preprocessing import workflows
 from dmri_preprocessing import outputs
-from dmri_preprocessing import report
+from dmri_preprocessing.report import reports
 
 application_name = "dmri_preprocessing"
 version = "0.2.1"
@@ -202,4 +202,4 @@ def main():
     outputs.to_derivatives(data, data_raw,OUTPUT_DIR,application_name,eddy_output_dir,dtifit_output_dir,eddy_inputs,figures)
 
     # Create report
-    report.reports.create_report(data, data_raw, OUTPUT_DIR, application_name)
+    reports.create_report(data, data_raw, OUTPUT_DIR, application_name)

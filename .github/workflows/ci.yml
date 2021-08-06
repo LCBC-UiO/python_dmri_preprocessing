@@ -4,6 +4,8 @@ jobs:
   install-package:
     name: Install package, download test data, and test
     runs-on: "ubuntu-latest"
+    env:
+      DOCKER_BUILDKIT: "1"
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2

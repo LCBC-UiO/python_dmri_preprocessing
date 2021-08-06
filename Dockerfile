@@ -73,8 +73,7 @@ RUN echo "Downloading FSL ..." \
     && sed -i -e "/fsleyes/d" -e "/wxpython/d" \
         ${FSLDIR}/etc/fslconf/fslpython_environment.yml \
     && bash /opt/fsl-6.0.4/etc/fslconf/fslpython_install.sh -f /opt/fsl-6.0.4 \
-    && find ${FSLDIR}/fslpython/envs/fslpython/lib/python3.7/site-packages/ -type d -name "tests"  -print0 | xargs -0 rm -r \
-    && ${FSLDIR}/fslpython/bin/conda clean --all
+    && find ${FSLDIR}/fslpython/envs/fslpython/lib/python3.7/site-packages/ -type d -name "tests"  -print0 | xargs -0 rm -r 
 
 
 # Install mrtrix3 from source
